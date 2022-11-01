@@ -5,7 +5,7 @@ function BlogPost() {
 
 
   const {state} = useLocation();
-  const {title,content,date,postImg,link} = state;
+  const {title,content,date,postImg,authorName,authorImage} = state;
   return (
     <main className="bg-grey pb-30">
       <div className="container single-content">
@@ -15,17 +15,17 @@ function BlogPost() {
             <div className="col-md-6">
               <div className="entry-meta align-items-center meta-2 font-small color-muted">
                 <p className="mb-5">
-                  <a className="author-avatar" href="">
+                  <a className="author-avatar" onClick={()=>{console.log(authorImage)}}>
                     <img
                       className="img-circle"
-                      src="assets/imgs/authors/author-3.jpg"
+                      src={authorImage}
                       alt=""
                     />
                   </a>
                   By{" "}
                   <a href="author.html">
                     <span className="author-name font-weight-bold">
-                      Barbara Cartland
+                      {authorName}
                     </span>
                   </a>
                 </p>
@@ -56,7 +56,7 @@ function BlogPost() {
             <div className="author-image mb-30">
               <a href="author.html">
                 <img
-                  src="assets/imgs/authors/author-3.jpg"
+                  src={authorImage}
                   alt=""
                   className="avatar"
                 />
@@ -71,7 +71,7 @@ function BlogPost() {
                       title="Posted by Barbara Cartland"
                       rel="author"
                     >
-                      Barbara Cartland
+                      {authorName}
                     </a>
                   </span>
                 </span>

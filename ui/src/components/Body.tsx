@@ -7,12 +7,27 @@ import Articles from "../Artcle";
 import axios from "axios";
 function Body(props: any) {
   interface contentInterface {
+    _id: String;
     title: String;
     content: String;
     date: String;
     img: String;
+    authorName: String;
+    authorImg: String;
   }
-  const [backEndData, setBackEndData] = useState<Array<contentInterface>>([]);
+  const [backEndData, setBackEndData] = useState<Array<contentInterface>>([
+    {
+      _id: "",
+      title: "",
+      content: "",
+      date: "",
+      img: "",
+      authorName: "",
+      authorImg: "",
+    },
+  ]);
+
+  
 
   useEffect(() => {
     // Get the notes in the Db
@@ -27,10 +42,35 @@ function Body(props: any) {
         console.log(error);
       });
   });
-  //console.log(backEndData);
+
+  useEffect(() => {
+    // Get the notes in the Db
+    axios
+      .get("/api")
+      .then(function (response) {
+        // Sends the data response to the {backEndData constant}
+        setBackEndData(response.data);
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error);
+      });
+  },[]);
+
+  function check() {
+    console.log(backEndData);
+    const reverseBack = backEndData.reverse();
+    console.log(reverseBack);
+  }
   return (
     <main>
-      <NotSignedIn />
+      <NotSignedIn
+        isLoggedIn={props.isLoggedIn}
+        onSuccess={props.onSuccess}
+        onFailure={props.onFailure}
+        profile={props.profile}
+        onCompose={props.onCompose}
+      />
       <div className="container">
         <div className="hot-tags pt-30 pb-30 font-small align-self-center">
           <div className="widget-header-3">
@@ -43,42 +83,38 @@ function Body(props: any) {
         </div>
         <div className="loop-grid mb-30">
           <div className="row">
-            <TopPost />
-            <FeaturedPost />
+            <TopPost backEndData={backEndData} setPage={props.setPage} />
+            {/* <FeaturedPost /> */}
           </div>
         </div>
       </div>
       <div className="bg-grey pt-50 pb-50">
         <div className="container">
           <div className="row">
-            <div className="col-lg-8">
+            <div className="col-lg-12">
               <div className="post-module-2">
                 <div className="widget-header-1 position-relative mb-30  wow fadeInUp animated">
-                  <h5 className="mt-5 mb-30">Travel tips</h5>
+                  <h5 className="mt-5 mb-30">Latest Post</h5>
                 </div>
-                <div className="loop-list loop-list-style-1">
-                  <div className="row">
-                     {backEndData.map((article, index) => {
-                      return (
-                        <ArticleBuilder
-                          key={index}
-                          title={article.title}
-                          content={article.content}
-                          desc={article.content.slice(0, 20) + "..."}
-                          date={article.date}
-                          postImg={article.img}
-                          
-                          setPage={props.setPage}
-                        />
-                      );
-                    })} 
-                    
-                    
-                  </div>
-                </div>
+
+                {backEndData.map((article, index) => {
+                  return (
+                    <ArticleBuilder
+                      key={article._id}
+                      title={article.title}
+                      content={article.content}
+                      desc={article.content.slice(0, 20) + "..."}
+                      date={article.date}
+                      postImg={article.img}
+                      authorName={article.authorName}
+                      authorImg={article.authorImg}
+                      setPage={props.setPage}
+                    />
+                  );
+                })}
               </div>
 
-              <div className="pagination-area mb-30 wow fadeInUp animated">
+              {/* <div className="pagination-area mb-30 wow fadeInUp animated">
                 <nav aria-label="Page navigation example">
                   <ul className="pagination justify-content-start">
                     <li className="page-item">
@@ -87,7 +123,7 @@ function Body(props: any) {
                       </a>
                     </li>
                     <li className="page-item active">
-                      <a className="page-link" href="#">
+                      <a className="page-link" href="#" onClick={check}>
                         01
                       </a>
                     </li>
@@ -113,9 +149,9 @@ function Body(props: any) {
                     </li>
                   </ul>
                 </nav>
-              </div>
+              </div> */}
             </div>
-            <div className="col-lg-4">
+            {/* <div className="col-lg-4">
               <div className="widget-area">
                 <div className="sidebar-widget widget-about mb-50 pt-30 pr-30 pb-30 pl-30 bg-white border-radius-5 has-border  wow fadeInUp animated">
                   <img
@@ -251,7 +287,7 @@ function Body(props: any) {
                   </div>
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

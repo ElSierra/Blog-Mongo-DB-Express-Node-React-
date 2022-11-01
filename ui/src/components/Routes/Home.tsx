@@ -8,7 +8,14 @@ export const Home = (props: any) => {
     <div>
       <Aside />
       <Header />
-      <Body setPage = {props.setPage}/>
+      <Body
+        setPage={props.setPage}
+        isLoggedIn={props.isLoggedIn}
+        onSuccess={props.onSuccess}
+        onFailure={props.onFailure}
+        profile={props.profile}
+        onCompose={props.onCompose}
+      />
       <Footer />
     </div>
   );

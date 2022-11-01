@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 
 import axios from "axios";
+import { useLocation } from "react-router-dom";
+import Avatar from "react-avatar";
 
 export function Form(props: any) {
   interface contentInterface {
@@ -8,13 +10,19 @@ export function Form(props: any) {
     content: String;
     date: String;
     img: String;
+    authorName: String;
+    imgUrl: String;
   }
   const [blogPost, setblogPost] = useState<contentInterface>({
     title: "",
     content: "",
     date: "",
     img: "",
+    authorName: "",
+    imgUrl: "",
   });
+
+  const { state } = useLocation();
 
   function handleChange(e: any) {
     var today = new Date();
@@ -33,6 +41,8 @@ export function Form(props: any) {
           content: prev.content,
           date: date,
           img: prev.img,
+          authorName: props.uName,
+          imgUrl: props.imageUrl,
         };
       } else if (name === "Compose") {
         return {
@@ -40,6 +50,8 @@ export function Form(props: any) {
           content: value,
           date: date,
           img: prev.img,
+          authorName: props.uName,
+          imgUrl: props.imageUrl,
         };
       } else if (name === "img") {
         return {
@@ -47,6 +59,8 @@ export function Form(props: any) {
           content: prev.content,
           date: date,
           img: value,
+          authorName: props.uName,
+          imgUrl: props.imageUrl,
         };
       } else {
         return {
@@ -54,10 +68,11 @@ export function Form(props: any) {
           content: "",
           date: "",
           img: "",
+          authorName: "",
+          imgUrl: "",
         };
       }
     });
-
   }
 
   function updateContent(e: any) {
@@ -67,6 +82,8 @@ export function Form(props: any) {
         content: blogPost.content,
         date: blogPost.date,
         img: blogPost.img,
+        authorName: blogPost.authorName,
+        authorImg: blogPost.imgUrl,
       })
       .then(function (response) {
         console.log(response.data);
@@ -74,15 +91,16 @@ export function Form(props: any) {
       .catch(function (error) {
         console.log(error.response.data);
       });
-      setblogPost({
-        title: "",
-        content: "",
-        date: "",
-        img: "",
-      })
+    setblogPost({
+      title: "",
+      content: "",
+      date: "",
+      img: "",
+      authorName: props.uName,
+      imgUrl: props.imageUrl,
+    });
 
     e.preventDefault();
-
   }
   return (
     <div className="container single-content">
@@ -91,6 +109,15 @@ export function Form(props: any) {
           <h5 className="mt-5 mb-30">{props.name}</h5>
         </div>
         <form className="form-contact comment_form" action="#" id="commentForm">
+          <Avatar
+            src={props.imageUrl}
+            size="30"
+            round={true}
+            onClick={(e) => {
+              props.onCompose();
+            }}
+          />
+          <p style={{ display: "inline-block" }}>{props.uName}</p>
           <div className="row">
             <div className="col-sm-6">
               <div className="form-group">
@@ -106,7 +133,7 @@ export function Form(props: any) {
                   }}
                 />
               </div>
-            </div>{" "}
+            </div>
             <div className="col-sm-6">
               <div className="form-group">
                 <input
