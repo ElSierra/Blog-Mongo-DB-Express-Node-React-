@@ -4,6 +4,7 @@ import { gapi } from "gapi-script";
 import axios from "axios";
 import { useCookies } from "react-cookie";
 import Avatar from "react-avatar";
+import {FidgetSpinner} from 'react-loader-spinner';
 
 const emptyData = {
   email: "",
@@ -45,13 +46,7 @@ function NotSignedIn(props: any) {
       <div className="container">
         <div className="row">
           <div className="col-lg-6 align-self-center">
-            <p className="text-muted">
-              <span
-                className="typewrite d-inline"
-                data-period="2000"
-                data-type={list}
-              ></span>
-            </p>
+           
 
             {profile.name !== "" ? (
               
@@ -70,7 +65,7 @@ function NotSignedIn(props: any) {
                
             
             ) : (
-              ""
+             <FidgetSpinner/>
             )}
 
             <h4 style={{ display: "inline-block", marginBottom: 0 }}>

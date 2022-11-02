@@ -1,13 +1,15 @@
 import React from "react";
+
 function TopPost(props: any) {
   const backend = props.backEndData;
   //Random number form 0 to 4
+const backendLength= backend.length;
+  const randomArticle = backend[backendLength-1];
 
-  const randomArticle = backend[0];
-
-  console.log(randomArticle.title);
+  
   return (
     <div className="col-lg-8 mb-30">
+ 
       <div
         className="carausel-post-1 hover-up border-radius-10 overflow-hidden transition-normal position-relative wow fadeInUp animated"
         style={{

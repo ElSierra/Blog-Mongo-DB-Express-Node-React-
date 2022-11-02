@@ -1,15 +1,21 @@
 import React, { useEffect, useState } from "react";
 
 import axios from "axios";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Avatar from "react-avatar";
+import { FilePond, registerPlugin } from "react-filepond";
+import FilePondPluginImagePreview from "filepond-plugin-image-preview";
+import "filepond/dist/filepond.min.css";
+import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css";
+import FilePondPluginFileValidateSize from "filepond-plugin-file-validate-size";
 
+registerPlugin(FilePondPluginFileValidateSize, FilePondPluginImagePreview);
 export function Form(props: any) {
   interface contentInterface {
     title: String;
     content: String;
     date: String;
-    img: String;
+    img: { preview: String; data: Blob | string };
     authorName: String;
     imgUrl: String;
   }
@@ -17,14 +23,18 @@ export function Form(props: any) {
     title: "",
     content: "",
     date: "",
-    img: "",
+    img: { preview: "", data: "" },
     authorName: "",
     imgUrl: "",
   });
-
-  const { state } = useLocation();
+  const [files, setFiles] = useState([]);
+  const [fileLimit, setFileLimit] = useState(false);
+  const navigate = useNavigate();
+  // const { state } = useLocation();
+  // const { data } = blogPost.img;
 
   function handleChange(e: any) {
+    console.log(files)
     var today = new Date();
     var dd = String(today.getDate()).padStart(2, "0");
     var mm = String(today.getMonth() + 1).padStart(2, "0"); //January is 0!
@@ -58,7 +68,10 @@ export function Form(props: any) {
           title: prev.title,
           content: prev.content,
           date: date,
-          img: value,
+          img: {
+            preview: URL.createObjectURL(e.target.files[0]),
+            data: e.target.files[0],
+          },
           authorName: props.uName,
           imgUrl: props.imageUrl,
         };
@@ -67,7 +80,7 @@ export function Form(props: any) {
           title: "",
           content: "",
           date: "",
-          img: "",
+          img: { preview: "", data: "" },
           authorName: "",
           imgUrl: "",
         };
@@ -76,18 +89,40 @@ export function Form(props: any) {
   }
 
   function updateContent(e: any) {
+    const formData = new FormData();
+   //  @ts-ignore
+    console.log(files[0].file);
+//  @ts-ignore
+    formData.append("file", files[0].file);
+    formData.append("env", process.env.REACT_APP_API_KEY || "");
+    formData.append("title", blogPost.title.toString());
+    formData.append("content", blogPost.content.toString());
+    formData.append("date", blogPost.date.toString());
+    formData.append("authorName", blogPost.authorName.toString());
+    formData.append("authorImg", blogPost.imgUrl.toString());
+
+   // console.log(formData);
     axios
-      .post("/api/blogpost", {
-        env: process.env.REACT_APP_API_KEY,
-        title: blogPost.title,
-        content: blogPost.content,
-        date: blogPost.date,
-        img: blogPost.img,
-        authorName: blogPost.authorName,
-        authorImg: blogPost.imgUrl,
+      .post("/api/blogpost", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        // env: process.env.REACT_APP_API_KEY,
+        // title: blogPost.title,
+        // content: blogPost.content,
+        // date: blogPost.date,
+        // img: formData,
+        // authorName: blogPost.authorName,
+        // authorImg: blogPost.imgUrl,
       })
       .then(function (response) {
         console.log(response.data);
+        if(response.data === 'LIMIT_FILE_SIZE'){
+          setFileLimit(true);
+        } else if (response.data === "Successfully added "){
+          setFileLimit(false);
+          navigate('/');
+        }
       })
       .catch(function (error) {
         console.log(error.response.data);
@@ -96,16 +131,27 @@ export function Form(props: any) {
       title: "",
       content: "",
       date: "",
-      img: "",
+      img: { preview: "", data: "" },
       authorName: props.uName,
       imgUrl: props.imageUrl,
     });
 
+   
     e.preventDefault();
   }
   return (
     <div className="container single-content">
+      <FilePond
+        files={files}
+        // @ts-ignore
+        onupdatefiles={e=>(setFiles(e))}
+        allowMultiple={true}
+        maxFiles={1}
+        name="files"
+        labelIdle='Drag & Drop your files or <span class="filepond--label-action">Browse</span>'
+      />
       <div className="comment-form wow fadeIn animated">
+        <div>{fileLimit ? <p>⚠️ File is too Large ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ </p> : ''}</div>
         <div className="widget-header-2 position-relative mb-30">
           <h5 className="mt-5 mb-30">{props.name}</h5>
         </div>
@@ -135,21 +181,7 @@ export function Form(props: any) {
                 />
               </div>
             </div>
-            <div className="col-sm-6">
-              <div className="form-group">
-                <input
-                  className="form-control"
-                  name="img"
-                  value={blogPost.img.toString()}
-                  id="img-url"
-                  type="text"
-                  placeholder="https://{Image Url}"
-                  onChange={(e) => {
-                    handleChange(e);
-                  }}
-                />
-              </div>
-            </div>
+          
             <div className="col-12">
               <div className="form-group">
                 <textarea
@@ -168,7 +200,7 @@ export function Form(props: any) {
             </div>
           </div>
           <div className="form-group">
-            <button
+           {files.length !== 0 ? <button
               type="submit"
               className="btn button button-contactForm"
               onClick={(e) => {
@@ -176,7 +208,7 @@ export function Form(props: any) {
               }}
             >
               {props.name}
-            </button>
+            </button>: ''}
           </div>
         </form>
       </div>

@@ -2,8 +2,10 @@ const express = require("express");
 require("dotenv").config();
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
-
+const uuid = require("uuid");
+multer = require("multer");
 const cors = require("cors");
+const { upload } = require("./fileupload");
 
 const { OAuth2Client } = require("google-auth-library");
 const client = new OAuth2Client(process.env.CLIENT_ID);
@@ -14,6 +16,7 @@ const app = express();
 // parse requests of content-type - application/json
 app.use(bodyParser.json());
 app.use(cors());
+app.use(express.static("public"));
 
 // parse requests of content-type - application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -55,7 +58,7 @@ app.get("/api/random", (req, res) => {
       console.log(err);
     } else {
       const random = Math.floor(Math.random() * count);
-      res.send({random: random});
+      res.send({ random: random });
     }
   });
 });
@@ -63,30 +66,44 @@ app.get("/api/random", (req, res) => {
 app.get("/login", (req, res) => {
   res.redirect("https://127.0.0.1:3000");
 });
+const uploadImage = upload.single("file");
+app.post("/api/blogpost", (req, res,) => {
 
-app.post("/api/blogpost", (req, res) => {
-  const {env, title, content, date, img, authorName, authorImg } = req.body;
-  console.log(env);
-
-  // console.log('Adding notes:::::', note);
-  // notes.push({ title: note.title, content: note.content });
-  // res.json("entry addedd");
-  // console.log(notes)
-  const newCompose = new Blog({
-    title: title,
-    content: content,
-    date: date,
-    img: img,
-    authorName: authorName,
-    authorImg: authorImg,
-  });
-  newCompose.save((err) => {
-    if (!err) {
-      res.send(`Successfully added ${req.body}`);
+  uploadImage(req,res,(err)=>{
+    if (!err){
+    const url = req.protocol + '://' + req.get('host')
+    const { env, title, content, date, img, authorName, authorImg } = req.body;
+    console.log(req.file)
+  
+    const newCompose = new Blog({
+      title: title,
+      content: content,
+      date: date,
+      img: url + '/'+ req.file.filename,
+      authorName: authorName,
+      authorImg: authorImg,
+    });
+  
+    // console.log('Adding notes:::::', note);
+    // notes.push({ title: note.title, content: note.content });
+    // res.json("entry addedd");
+    // console.log(notes)
+    if (env === process.env.TOKENFORBLOG) {
+      newCompose.save((err) => {
+        if (!err) {
+          res.send(`Successfully added `);
+        } else {
+          res.send(err);
+        }
+      });
     } else {
-      res.send(err);
+      res.send({ error: 401, msg: "Unautorized Access" });
+    }} else {
+      console.log(err.code);
+      res.send(err.code);
     }
-  });
+  })
+  
 });
 
 // set port, listen for requests

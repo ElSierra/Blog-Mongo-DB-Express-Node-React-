@@ -5,7 +5,9 @@ import TopPost from "./TopPost";
 import ArticleBuilder from "./article/ArticleBuilder";
 import Articles from "../Artcle";
 import axios from "axios";
+
 function Body(props: any) {
+ 
   interface contentInterface {
     _id: String;
     title: String;
@@ -64,6 +66,7 @@ function Body(props: any) {
   }
   return (
     <main>
+     
       <NotSignedIn
         isLoggedIn={props.isLoggedIn}
         onSuccess={props.onSuccess}
@@ -103,7 +106,7 @@ function Body(props: any) {
                       key={article._id}
                       title={article.title}
                       content={article.content}
-                      desc={article.content.slice(0, 20) + "..."}
+                      desc={ "..."}
                       date={article.date}
                       postImg={article.img}
                       authorName={article.authorName}
