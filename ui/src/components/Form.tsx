@@ -78,6 +78,7 @@ export function Form(props: any) {
   function updateContent(e: any) {
     axios
       .post("/api/blogpost", {
+        env: process.env.REACT_APP_API_KEY,
         title: blogPost.title,
         content: blogPost.content,
         date: blogPost.date,

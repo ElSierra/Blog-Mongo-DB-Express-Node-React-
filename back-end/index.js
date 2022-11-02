@@ -65,7 +65,8 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/api/blogpost", (req, res) => {
-  const { title, content, date, img, authorName, authorImg } = req.body;
+  const {env, title, content, date, img, authorName, authorImg } = req.body;
+  console.log(env);
 
   // console.log('Adding notes:::::', note);
   // notes.push({ title: note.title, content: note.content });

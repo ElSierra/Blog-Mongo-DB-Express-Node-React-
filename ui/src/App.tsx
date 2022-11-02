@@ -38,6 +38,7 @@ function App() {
 
     navigate("/blogPost", {
       state: {
+        
         title: blogPost.title,
         content: blogPost.content,
         date: blogPost.date,
