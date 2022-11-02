@@ -45,19 +45,7 @@ function Body(props: any) {
       });
   });
 
-  useEffect(() => {
-    // Get the notes in the Db
-    axios
-      .get("/api")
-      .then(function (response) {
-        // Sends the data response to the {backEndData constant}
-        setBackEndData(response.data);
-      })
-      .catch(function (error) {
-        // handle error
-        console.log(error);
-      });
-  },[]);
+
 
   function check() {
     console.log(backEndData);
@@ -71,7 +59,7 @@ function Body(props: any) {
         isLoggedIn={props.isLoggedIn}
         onSuccess={props.onSuccess}
         onFailure={props.onFailure}
-        profile={props.profile}
+       
         onCompose={props.onCompose}
       />
       <div className="container">
@@ -79,14 +67,14 @@ function Body(props: any) {
           <div className="widget-header-3">
             <div className="row align-self-center">
               <div className="col-md-4 align-self-center">
-                <h5 className="widget-title">Featured posts</h5>
+                
               </div>
             </div>
           </div>
         </div>
         <div className="loop-grid mb-30">
           <div className="row">
-            <TopPost backEndData={backEndData} setPage={props.setPage} />
+          <TopPost backEndData={backEndData} setPage={props.setPage} />
             {/* <FeaturedPost /> */}
           </div>
         </div>
@@ -104,6 +92,7 @@ function Body(props: any) {
                   return (
                     <ArticleBuilder
                       key={article._id}
+                      id = {article._id}
                       title={article.title}
                       content={article.content}
                       desc={ "..."}
@@ -111,6 +100,7 @@ function Body(props: any) {
                       postImg={article.img}
                       authorName={article.authorName}
                       authorImg={article.authorImg}
+                      profile = {props.profile}
                       setPage={props.setPage}
                     />
                   );

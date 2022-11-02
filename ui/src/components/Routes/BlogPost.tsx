@@ -1,11 +1,68 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { Form } from "../Form";
+import Comment from "../article/BlogComment";
+import axios from "axios";
+import CommentBox from "../CommentBox";
+
 function BlogPost() {
+  const [backEndData, setbackEndData] = useState<
+    [{ comment: ""; id: ""; name: ""; _id: ""; img: ""; date: "" }]
+  >([
+    {
+      comment: "",
+      id: "",
+      name: "",
+      _id: "",
+      img: "",
+      date: "",
+    },
+  ]);
+  const { state } = useLocation();
+  const nullCheck = {
+      userName: '',
+      imageUrl: '',
+      googleId:'',
+      id:'',
+      title:'',
+      content:'',
+      date:'',
+      postImg:'',
+      authorName:'',
+      authorImage:''
+    
+  }
+  
 
+  const {
+    userName ,
+    imageUrl,
+    googleId,
+    id,
+    title,
+    content,
+    date,
+    postImg,
+    authorName,
+    authorImg,
+  } = state || nullCheck;
 
-  const {state} = useLocation();
-  const {title,content,date,postImg,authorName,authorImage} = state;
+  //console.log(state);
+  //console.log(googleId);
+  useEffect(() => {
+    // Get the notes in the Db
+    axios
+      .get("/api/comments/" + id)
+      .then(function (response) {
+        //console.log(response.data);
+        setbackEndData(response.data);
+        // Sends the data response to the {backEndData constant}
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error);
+      });
+  });
   return (
     <main className="bg-grey pb-30">
       <div className="container single-content">
@@ -15,12 +72,13 @@ function BlogPost() {
             <div className="col-md-6">
               <div className="entry-meta align-items-center meta-2 font-small color-muted">
                 <p className="mb-5">
-                  <a className="author-avatar" onClick={()=>{console.log(authorImage)}}>
-                    <img
-                      className="img-circle"
-                      src={authorImage}
-                      alt=""
-                    />
+                  <a
+                    className="author-avatar"
+                    onClick={() => {
+                      console.log(authorImg);
+                    }}
+                  >
+                    <img className="img-circle" src={authorImg} alt="" />
                   </a>
                   By{" "}
                   <a href="author.html">
@@ -33,7 +91,6 @@ function BlogPost() {
                 <span className="has-dot"> 8 mins read</span>
               </div>
             </div>
-            
           </div>
         </div>
 
@@ -52,14 +109,10 @@ function BlogPost() {
             <hr className="section-divider" />
           </div>
 
-          <div className="author-bio p-30 mt-50 border-radius-10 bg-white wow fadeIn animated">
-            <div className="author-image mb-30">
+          <div className="author-bio p-10 mt-30 border-radius-10 bg-white wow fadeIn animated" >
+            <div className="author-image "  >
               <a href="author.html">
-                <img
-                  src={authorImage}
-                  alt=""
-                  className="avatar"
-                />
+                <img src={authorImg} alt="" className="avatar" />
               </a>
             </div>
             <div className="author-info">
@@ -76,104 +129,35 @@ function BlogPost() {
                   </span>
                 </span>
               </h4>
-              <h5 className="text-muted">About author</h5>
-              <div className="author-description text-muted">
-                You should write because you love the shape of stories and
-                sentences and the creation of different words on a page.{" "}
-              </div>
+              
               <a href="author.html" className="author-bio-link mb-md-0 mb-3">
                 View all posts (125)
               </a>
-              <div className="author-social">
-                <ul className="author-social-icons">
-                  <li className="author-social-link-facebook">
-                    <a href="#" target="_blank">
-                      <i className="ti-facebook"></i>
-                    </a>
-                  </li>
-                  <li className="author-social-link-twitter">
-                    <a href="#" target="_blank">
-                      <i className="ti-twitter-alt"></i>
-                    </a>
-                  </li>
-                  <li className="author-social-link-pinterest">
-                    <a href="#" target="_blank">
-                      <i className="ti-pinterest"></i>
-                    </a>
-                  </li>
-                  <li className="author-social-link-instagram">
-                    <a href="#" target="_blank">
-                      <i className="ti-instagram"></i>
-                    </a>
-                  </li>
-                </ul>
-              </div>
+              
             </div>
           </div>
-
-          <div className="comment-form wow fadeIn animated">
+          <div className="comments-area">
             <div className="widget-header-2 position-relative mb-30">
-              <h5 className="mt-5 mb-30">Leave a Reply</h5>
+              <h5 className="mt-5 mb-30">Comments</h5>
             </div>
-            <form
-              className="form-contact comment_form"
-              action="#"
-              id="commentForm"
-            >
-              <div className="row">
-                <div className="col-12">
-                  <div className="form-group">
-                    <textarea
-                      className="form-control w-100"
-                      name="comment"
-                      id="comment"
-                      cols={30}
-                      rows={9}
-                      placeholder="Write Comment"
-                    ></textarea>
-                  </div>
-                </div>
-                <div className="col-sm-6">
-                  <div className="form-group">
-                    <input
-                      className="form-control"
-                      name="name"
-                      id="name"
-                      type="text"
-                      placeholder="Name"
-                    />
-                  </div>
-                </div>
-                <div className="col-sm-6">
-                  <div className="form-group">
-                    <input
-                      className="form-control"
-                      name="email"
-                      id="email"
-                      type="email"
-                      placeholder="Email"
-                    />
-                  </div>
-                </div>
-                <div className="col-12">
-                  <div className="form-group">
-                    <input
-                      className="form-control"
-                      name="website"
-                      id="website"
-                      type="text"
-                      placeholder="Website"
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="form-group">
-                <button type="submit" className="btn button button-contactForm">
-                  Post Comment
-                </button>
-              </div>
-            </form>
+            {backEndData.map((comment, index) => {
+              return (
+                <CommentBox
+                key = {index}
+                  imgUrl={comment.img}
+                  comment={comment.comment}
+                  name={comment.name}
+                  date={comment.date}
+                />
+              );
+            })}
           </div>
+          <Comment
+            id={id}
+            name={userName}
+            imageUrl={imageUrl}
+            googleId={googleId}
+          />
         </article>
       </div>
     </main>

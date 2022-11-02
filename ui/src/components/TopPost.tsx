@@ -8,7 +8,7 @@ const backendLength= backend.length;
 
   
   return (
-    <div className="col-lg-8 mb-30">
+    <div className="col-lg-8 mb-30" style={{maxWidth: '100%' , flex: '100%'}}>
  
       <div
         className="carausel-post-1 hover-up border-radius-10 overflow-hidden transition-normal position-relative wow fadeInUp animated"

@@ -41,9 +41,18 @@ const blogSchema = {
   authorImg: String,
 };
 
+const commentSchema = {
+  name: String,
+  img: String,
+  comment: String,
+  id: String,
+  date: String,
+};
+
 const Blog = mongoose.model("Note", blogSchema);
 
 const Users = mongoose.model("User", userSchema);
+const Comments = mongoose.model("Comment", commentSchema);
 
 // simple route
 app.get("/api/", (req, res) => {
@@ -67,45 +76,71 @@ app.get("/login", (req, res) => {
   res.redirect("https://127.0.0.1:3000");
 });
 const uploadImage = upload.single("file");
-app.post("/api/blogpost", (req, res,) => {
+app.post("/api/blogpost", (req, res) => {
+  uploadImage(req, res, (err) => {
+    if (!err) {
+      const url = req.protocol + "://" + req.get("host");
+      const { env, title, content, date, img, authorName, authorImg } =
+        req.body;
+      console.log(req.file);
 
-  uploadImage(req,res,(err)=>{
-    if (!err){
-    const url = req.protocol + '://' + req.get('host')
-    const { env, title, content, date, img, authorName, authorImg } = req.body;
-    console.log(req.file)
-  
-    const newCompose = new Blog({
-      title: title,
-      content: content,
-      date: date,
-      img: url + '/'+ req.file.filename,
-      authorName: authorName,
-      authorImg: authorImg,
-    });
-  
-    // console.log('Adding notes:::::', note);
-    // notes.push({ title: note.title, content: note.content });
-    // res.json("entry addedd");
-    // console.log(notes)
-    if (env === process.env.TOKENFORBLOG) {
-      newCompose.save((err) => {
-        if (!err) {
-          res.send(`Successfully added `);
-        } else {
-          res.send(err);
-        }
+      const newCompose = new Blog({
+        title: title,
+        content: content,
+        date: date,
+        img: url + "/" + req.file.filename,
+        authorName: authorName,
+        authorImg: authorImg,
       });
+
+      // console.log('Adding notes:::::', note);
+      // notes.push({ title: note.title, content: note.content });
+      // res.json("entry addedd");
+      // console.log(notes)
+      if (env === process.env.TOKENFORBLOG) {
+        newCompose.save((err) => {
+          if (!err) {
+            res.send(`Successfully added `);
+          } else {
+            res.send(err);
+          }
+        });
+      } else {
+        res.send({ error: 401, msg: "Unautorized Access" });
+      }
     } else {
-      res.send({ error: 401, msg: "Unautorized Access" });
-    }} else {
       console.log(err.code);
       res.send(err.code);
     }
-  })
-  
+  });
 });
-
+app.post("/api/comments", (req, res) => {
+  console.log(req.body);
+  const comment = Comments({
+    name: req.body.name,
+    img: req.body.img,
+    comment: req.body.comment,
+    id: req.body.id,
+    date: req.body.date,
+  });
+  if (req.body.env === process.env.TOKENFORBLOG) {
+    comment.save((err) => {
+      if (!err) {
+        res.send(`Successfully added `);
+      } else {
+        res.send(err);
+      }
+    });
+  } else {
+    res.send({ error: 501, msg: "Unauthorized access" });
+  }
+});
+app.get("/api/comments/:comment", (req, res) => {
+ 
+  Comments.find({id: req.params.comment},(err, found) => {
+    !err ? res.send(found) : console.log(err);
+  });
+});
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
