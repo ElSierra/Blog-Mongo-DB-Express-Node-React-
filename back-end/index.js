@@ -16,12 +16,12 @@ const app = express();
 // parse requests of content-type - application/json
 app.use(bodyParser.json());
 app.use(cors());
-app.use(express.static("public"));
+app.use(express.static(__dirname + "/public"));
 
 // parse requests of content-type - application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }));
 
-mongoose.connect("mongodb://127.0.0.1:27017/blogPost");
+mongoose.connect(process.env.MONGO_URI);
 
 const userSchema = new mongoose.Schema({
   // email: String,
@@ -39,6 +39,7 @@ const blogSchema = {
   img: String,
   authorName: String,
   authorImg: String,
+  timestamp: String,
 };
 
 const commentSchema = {
@@ -72,25 +73,25 @@ app.get("/api/random", (req, res) => {
   });
 });
 
-app.get("/login", (req, res) => {
-  res.redirect("https://127.0.0.1:3000");
-});
+
 const uploadImage = upload.single("file");
 app.post("/api/blogpost", (req, res) => {
   uploadImage(req, res, (err) => {
     if (!err) {
       const url = req.protocol + "://" + req.get("host");
-      const { env, title, content, date, img, authorName, authorImg } =
+      const { env, title, content, date, authorName, authorImg, timestamp} =
         req.body;
-      console.log(req.file);
+      console.log(req.body);
 
       const newCompose = new Blog({
         title: title,
         content: content,
         date: date,
-        img: url + "/" + req.file.filename,
+        img: url + "/uploads/" + req.file.filename,
         authorName: authorName,
         authorImg: authorImg,
+        timestamp: timestamp,
+     
       });
 
       // console.log('Adding notes:::::', note);
@@ -122,6 +123,7 @@ app.post("/api/comments", (req, res) => {
     comment: req.body.comment,
     id: req.body.id,
     date: req.body.date,
+    
   });
   if (req.body.env === process.env.TOKENFORBLOG) {
     comment.save((err) => {
@@ -136,8 +138,7 @@ app.post("/api/comments", (req, res) => {
   }
 });
 app.get("/api/comments/:comment", (req, res) => {
- 
-  Comments.find({id: req.params.comment},(err, found) => {
+  Comments.find({ id: req.params.comment }, (err, found) => {
     !err ? res.send(found) : console.log(err);
   });
 });
