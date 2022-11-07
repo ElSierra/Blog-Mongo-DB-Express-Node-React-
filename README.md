@@ -21,9 +21,9 @@ About 60% Completed
 
 ## Todo
 
-- [] Refractor Code
-- [] Add User Page + Other
-- [] Clean Up code
+- [ ] Refractor Code
+- [ ] Add User Page + Other
+- [ ] Clean Up code
 
 ## Stack
 
