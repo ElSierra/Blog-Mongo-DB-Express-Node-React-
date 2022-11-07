@@ -1,8 +1,11 @@
-# Blog-Mongo-DB-Express-Node-React-
+# Blog(Full Stack) - MongoDB + Express + React + Node.js
 
-Home Page
+## Home Page
+
 ![My Image](home.gif)
-Post Page // Compose
+
+## Compose Page
+
 ![My Image](post.gif)
 
 ## Completion
