@@ -4,3 +4,4 @@ ui/node_modules
 back-end/node_modules
 .gitignore
 back-end/public/
+node_modules
